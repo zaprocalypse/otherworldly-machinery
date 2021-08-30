@@ -53,8 +53,8 @@ _________________
  _________________
 ## Known Issues:
 
- 8.   **General warning! This is a super early release. Please be willing to accept some weirdness, bugs and ugliness for now.**  It's unlikely this will do anything bad to your computer, but you may need to deal with a few problems to get it working.
- 9. EEs are not shown on the output images. They are included in the actual stats 
- 10.   Some images will end up incorrectly aligned due to them appearing that way in the image sources used. I've implemented some automatic edits that should crop these to fit fairly nicely, but it's possible that it doesn't work for all units - it hasn't been tested on everyone yet
- 11.  Some newer artifacts are missing from the data sources that I use for getting the images. Unfortunately, this isn't something I can fix, and I believe is mostly caused by the encryption changes in the game making it difficult to get clean images. 
- 12.   Skill enhancements are not included in the data Fribbels captures/stores. Until this changes (which there are no plans for) - you will need to manually add these. 
+*   **General warning! This is a super early release. Please be willing to accept some weirdness, bugs and ugliness for now.**  It's unlikely this will do anything bad to your computer, but you may need to deal with a few problems to get it working.
+* EEs are not shown on the output images. They are included in the actual stats 
+* Some images will end up incorrectly aligned due to them appearing that way in the image sources used. I've implemented some automatic edits that should crop these to fit fairly nicely, but it's possible that it doesn't work for all units - it hasn't been tested on everyone yet
+*  Some newer artifacts are missing from the data sources that I use for getting the images. Unfortunately, this isn't something I can fix, and I believe is mostly caused by the encryption changes in the game making it difficult to get clean images. 
+*   Skill enhancements are not included in the data Fribbels captures/stores. Until this changes (which there are no plans for) - you will need to manually add these. 
