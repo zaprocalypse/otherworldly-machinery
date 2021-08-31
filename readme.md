@@ -1,7 +1,7 @@
 
 # Otherworldly Machinery
 
-This is a tool for generating unit build images for Epic7. his tool HEAVILY relies on Fribbel's Epic 7 Optimizer, so [if you don't know what I'm talking about, check that out first!]((https://github.com/fribbels/Fribbels-Epic-7-Optimizer/)) These build images are intended to give all the information about a unit in one place in an easy to understand way. 
+This is a tool for generating unit build images for Epic7. This tool HEAVILY relies on Fribbel's Epic 7 Optimizer, so [if you don't know what I'm talking about, check that out first!]((https://github.com/fribbels/Fribbels-Epic-7-Optimizer/)) These build images are intended to give all the information about a unit in one place in an easy to understand way. 
 
 ![Example group image](https://i.imgur.com/qx6MZAp.png)
 
@@ -12,8 +12,6 @@ Currently the code is a bit hacky - but in the future I'd like to make the syste
 Also, this work is **almost entirely dependent on the work that Fribbels has done on their optimizer** - and I want to give **massive kudos and credit** to them for their work. All the data, values, calculations and stat definitions from this come directly from their work, and all I've really done is turn that data into a new format - so give them lots of kudos/support!
 
 I'd also love to give a bunch of credit to the [EpicSevenDB.com API](https://api.epicsevendb.com/) - which is where a lot of the images and unit stat information is derived from.  Super big respect for having an open API that allows for projects like this to exist.
-
-[img2]
   
 ## Requirements
 - Windows PC (Created on Windows 10, untested on earlier versions)
@@ -22,7 +20,7 @@ _________________
 # Setting Up
 ![enter image description here](https://i.imgur.com/42JNhBP.png)
 
- 1. Download the most recent release here.
+ 1. Download the most recent release [here](https://github.com/zaprocalypse/otherworldly-machinery/releases).
  2. Extract the zip file into a folder
  3. Run Otherworldly Machinery.exe
  4. Go to the Setup Tab
@@ -46,15 +44,16 @@ _________________
 
  6. Go to the "Output File" tab.
  7. Adjust any settings here:
-	       - 'Output Location' By default this is the folder named "Output" in the same place as the executable.
-		  - 'Show Preview' - Will automatically open the multi-image when finished
-		  - 'Remove App Detail Footer' - Will remove the automatically added footer that lets people know what app generated the image. You should feel free to remove this if you don't like it.
+	* 'Output Location' By default this is the folder named "Output" in the same place as the executable.
+	* 'Show Preview' - Will automatically open the multi-image when finished
+	* 'Remove App Detail Footer' - Will remove the automatically added footer that lets people know what app generated the image. You should feel free to remove this if you don't like it.
 8. Press Go! button, receive image!
  _________________
 ## Known Issues:
 
-*   **General warning! This is a super early release. Please be willing to accept some weirdness, bugs and ugliness for now.**  It's unlikely this will do anything bad to your computer, but you may need to deal with a few problems to get it working.
+* **General warning! This is a super early release. Please be willing to accept some weirdness, bugs and ugliness for now.**  It's unlikely this will do anything bad to your computer, but you may need to deal with a few problems to get it working.
 * EEs are not shown on the output images. They are included in the actual stats 
 * Some images will end up incorrectly aligned due to them appearing that way in the image sources used. I've implemented some automatic edits that should crop these to fit fairly nicely, but it's possible that it doesn't work for all units - it hasn't been tested on everyone yet
-*  Some newer artifacts are missing from the data sources that I use for getting the images. Unfortunately, this isn't something I can fix, and I believe is mostly caused by the encryption changes in the game making it difficult to get clean images. 
-*   Skill enhancements are not included in the data Fribbels captures/stores. Until this changes (which there are no plans for) - you will need to manually add these. 
+* Some artifacts or heroes may have incorrect or strange looking images. Largely these are all derived from a data source that I don't have control over, so they are difficult to fix.  
+* Some newer artifacts or hero images are missing from the data sources that I use for getting the images. Unfortunately, this isn't something I can fix, and I believe is mostly caused by the encryption changes in the game making it difficult to get clean images. 
+* Skill enhancements are not included in the data Fribbels captures/stores. Until this changes (which there are no plans for) - you will need to manually add these. 
