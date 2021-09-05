@@ -1,0 +1,10 @@
+.idea
+/images/**
+/output/**
+/venv
+infographic.log
+__pycache__/
+Otherworldly Machinery.spec
+Otherworldly Machinery.exe
+/build
+/dist
