@@ -1,0 +1,6 @@
+.idea
+/images/**
+/output/**
+/venv
+infographic.log
+__pycache__/
