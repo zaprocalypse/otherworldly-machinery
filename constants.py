@@ -1,4 +1,6 @@
 from PIL import ImageFont
+from pathlib import Path
+
 STAT_LOOKUP_TABLE = {
     'CriticalHitDamagePercent': 'CD%:',
     'CriticalHitChancePercent': 'CC%:',
@@ -92,7 +94,7 @@ EQUIP_LIST_ORDER = ['Weapon', 'Helmet', 'Armor', 'Necklace', 'Ring', 'Boots']
 # Text colour filled as white
 FILL_WHITE = (255, 255, 255)
 
-font_file = 'assets\\Fira_Sans_Condensed\\FiraSansCondensed-Regular.ttf'
+font_file = str(Path('assets/Fira_Sans_Condensed/FiraSansCondensed-Regular.ttf'))
 FNT = ImageFont.truetype(font_file, 12)
 FNT2 = ImageFont.truetype(font_file, 28)
 FN2SMALL = ImageFont.truetype(font_file, 18)

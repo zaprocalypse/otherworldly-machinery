@@ -16,6 +16,13 @@ import webbrowser
 import traceback
 import collections
 import decimal
+from pathlib import Path
+import atexit, shutil, tempfile
+
+root_folder = Path(__file__).parent
+
+temporary_folder = tempfile.mkdtemp()
+atexit.register(shutil.rmtree, temporary_folder)
 
 logging.basicConfig(filename='infographic.log', encoding='utf-8', level=logging.INFO, format='%(asctime)s: %(message)s')
 
@@ -30,8 +37,7 @@ def send_messages(message, ui_log):
 
 def fileInputDialogButton(buttonName):
     '''Dialog handler for fileInput tab. Returns filename to edits on page.'''
-    home_dir = os.getcwd()
-    fileName = QFileDialog.getOpenFileName(window, "Open File",home_dir, '*.json')
+    fileName = QFileDialog.getOpenFileName(window, "Open File", str(root_folder), '*.json')
     if fileName[0]:
         if buttonName == 'herodataButton':
             ui.heroDataEdit.setText(fileName[0])
@@ -42,8 +48,8 @@ def fileInputDialogButton(buttonName):
 
 def fileOutputDialogButton(buttonName):
     '''Dialog handler for Output file tab. Returns filename to edits on page.'''
-    home_dir = os.path.join(os.getcwd(), 'output')
-    directory = QFileDialog.getExistingDirectory(window, caption="Output File Directory", directory=home_dir)
+    home_dir = root_folder / 'output';
+    directory = QFileDialog.getExistingDirectory(window, caption="Output File Directory", directory=str(home_dir))
     if directory:
         if buttonName == 'outputLocationButton':
             ui.outputLocationEdit.setText(directory)
@@ -52,21 +58,27 @@ def fileOutputDialogButton(buttonName):
 def loadFileData(heroDataFileName, artifactDataFileName, fribbelsDataFileName):
     '''File Manager for Loading Data'''
     fileerror = 0
-    if os.path.exists(heroDataFileName) == False:
-        send_messages(f'Hero Data File Not Found - Please check if you entered it correctly', 'input')
-        fileerror = fileerror + 1
+    if not heroDataFileName:
+        heroDataFileName = str(root_folder / 'data/herodata.json')
+    elif not Path(heroDataFileName).is_file():
+        send_messages(f'Hero Data File Not Found - Using default or please check if you entered it correctly', 'input')
     else:
         send_messages(f'Processing hero data file {heroDataFileName}', 'input')
-    if os.path.exists(artifactDataFileName) == False:
-        send_messages(f'Artifact Data File Not Found - Please check if you entered it correctly', 'input')
-        fileerror = fileerror + 1
+
+    if not artifactDataFileName:
+        artifactDataFileName = str(root_folder / 'data/artifactdata.json')
+    elif not Path(artifactDataFileName).is_file():
+        send_messages(f'Artifact Data File Not Found - Using default or please check if you entered it correctly', 'input')
+        #fileerror = fileerror + 1
     else:
         send_messages(f'Processing hero data file {artifactDataFileName}', 'input')
-    if os.path.exists(fribbelsDataFileName) == False:
+
+    if not Path(fribbelsDataFileName).is_file():
         send_messages(f'Fribbels Data File Not Found - Please check if you entered it correctly', 'input')
         fileerror = fileerror + 1
     else:
         send_messages(f'Processing hero data file {fribbelsDataFileName}', 'input')
+
     if fileerror > 0:
         send_messages(f'ERROR: File issue occurred, please check log for details', 'input')
     else:
@@ -163,20 +175,28 @@ class NoHeroError(Exception):
     # sys.tracebacklimit = 0
     pass
 
-def confirm_file(filename, url):
-    """Check if file exists, if not download from url and save in correct location"""
+def cache_file(filename, url):
+    """Check if file exists, if not download from url and save in correct/cached location"""
     logging.info("Confirming if {} exists".format(filename))
+
+    # Generate directory for caching 
+    filename = temporary_folder + '/' + filename
+    filename = Path(filename)    
+    filename.parent.mkdir(parents=True, exist_ok=True)
+
     # nodl is used as an intentional exception upstream to replace a broken image with a question mark from assets
     if url != 'nodl':
-        if not os.path.exists(filename):
+        if not filename.is_file():
             send_messages(f"Downloading {url}", 'output')
             r = requests.get(url)
             if r.status_code == 200:
-                open(filename, 'wb').write(r.content)
+                filename.open('wb').write(r.content)
             else:
-                shutil.copy('assets/qm.png', filename)
+                shutil.copy(root_folder / 'assets/qm.png', str(filename))
     else:
-        shutil.copy('assets/qm.png', filename)
+        shutil.copy(root_folder / 'assets/qm.png', str(filename))
+    
+    return filename
 
 def colour_image(img, colour):
     """Replace white-shades with RGB Colour provided"""
@@ -359,14 +379,14 @@ def make_character_image(character_data):
     # Create base image
     img = Image.new(mode='RGBA', size=(920, 175), color=(33, 37, 41, 255))
     d1 = ImageDraw.Draw(img)
-    imprinton = Image.open('assets\\imprint-on.png').convert("RGBA").resize((15, 15))
-    imprintoff = Image.open('assets\\imprint-off.png').convert("RGBA").resize((15, 15))
+    imprinton = Image.open(root_folder / 'assets/imprint-on.png').convert('RGBA').resize((15, 15))
+    imprintoff = Image.open(root_folder / 'assets/imprint-off.png').convert('RGBA').resize((15, 15))
 
     # Hero image
     hero_image_file = remove_url_prefixes(character_data['assets']['thumbnail'])
     hero_image_file = remove_url_prefixes(hero_image_file)
-    hero_image_file = 'images//' + hero_image_file
-    confirm_file(hero_image_file, character_data['assets']['thumbnail'])
+    hero_image_file = 'images/' + hero_image_file
+    hero_image_file = cache_file(hero_image_file, character_data['assets']['thumbnail'])
     im1 = Image.open(hero_image_file).convert("RGBA")
     im1 = trim(im1)
     img.paste(im1, (0, 35), im1)
@@ -380,9 +400,9 @@ def make_character_image(character_data):
     hero_s3_url = 'https://assets.epicsevendb.com/_source/skill/sk_' + character_data['db_api_id'] + '_3.png'
 
     # Verify skill images exist, and get if not
-    confirm_file(hero_s1_image_file, hero_s1_url)
-    confirm_file(hero_s2_image_file, hero_s2_url)
-    confirm_file(hero_s3_image_file, hero_s3_url)
+    hero_s1_image_file = cache_file(hero_s1_image_file, hero_s1_url)
+    hero_s2_image_file = cache_file(hero_s2_image_file, hero_s2_url)
+    hero_s3_image_file = cache_file(hero_s3_image_file, hero_s3_url)
     skill_image_list = [hero_s1_image_file, hero_s2_image_file, hero_s3_image_file]
 
     # Place skill images
@@ -402,16 +422,16 @@ def make_character_image(character_data):
     else:
         hero_artifact_image_file = 'images\\icon_art' + character_data['artifact_id'] + '.png'
 
-    confirm_file(hero_artifact_image_file, hero_artifact_image_url)
+    hero_artifact_image_file = cache_file(hero_artifact_image_file, hero_artifact_image_url)
 
     # Replace artifact if no artifact equipped
     if character_data['artifact']['name'] == 'Firm Shield':
         character_data['artifact']['name'] = 'Not Equipped'
-        hero_artifact_image_file = 'assets\\qm.png'
+        hero_artifact_image_file = root_folder / 'assets/qm.png'
         character_data['artifact_level'] = '?'
 
     # Artifact image + Text
-    im1 = Image.open(hero_artifact_image_file).convert("RGBA")
+    im1 = Image.open(hero_artifact_image_file).convert('RGBA')
     im1 = im1.resize((30, 30))
     d1.text((330, 135), "Artifact:", font=FNT3, fill=FILL_WHITE)
     d1.text((330, 160), f"{character_data['artifact']['name']} +{str(character_data['artifact_level'])}", font=FNT4, fill=FILL_WHITE)
@@ -509,7 +529,7 @@ def make_character_image(character_data):
     # Place Hero Sets
     completed_sets = []
     for set in character_data['sets']:
-        completed_sets.append('assets\\set' + set[:-3] + '.png')
+        completed_sets.append(root_folder / ('assets/set' + set[:-3] + '.png'))
     d1.text((170, start_height + 7.25 * data_height + 25), 'Sets:', font=FNT3, fill=FILL_WHITE)
     for index, set_image in enumerate(completed_sets):
         hero_set_image_x = 205 + index * 30
@@ -519,7 +539,7 @@ def make_character_image(character_data):
         img.paste(im1, ((hero_set_image_x, hero_set_image_y)), mask=im1)
 
     # Recolour and resize of Class Image with Element
-    class_image = 'assets/class' + character_data['hero_class'] + '.png'
+    class_image = root_folder / ('assets/class' + character_data['hero_class'] + '.png')
     im1 = Image.open(class_image).convert("RGBA")
     elemental_colour = ELEMENT_COLOUR_LOOKUP_TABLE[character_data['attribute']]
     im1 = colour_image(im1, elemental_colour)
@@ -539,9 +559,8 @@ def make_character_image(character_data):
 
     if len(character_data['equipment']) > 5:
         for slot in EQUIP_LIST_ORDER:
-            set_image = ('assets\\' + character_data['equipment'][slot]['set'][-3:] + character_data['equipment'][slot][
-                                                                                          'set'][:-3] + '.png').lower()
-            im1 = Image.open(set_image).convert("RGBA")
+            set_image = root_folder / ('assets/' + character_data['equipment'][slot]['set'][-3:] + character_data['equipment'][slot]['set'][:-3] + '.png').lower()
+            im1 = Image.open(set_image).convert('RGBA')
             im1 = im1.resize(SET_IMAGE_SIZE)
             img.paste(im1, (item_panel_start_x + 15 + 100 * item_count + 20, item_panel_start_y - 5), im1)
             level = character_data['equipment'][slot]['level']
@@ -555,7 +574,7 @@ def make_character_image(character_data):
             main_stat_value = character_data['equipment'][slot]['main']['value']
 
             # Equip Slot Images
-            slot_image = 'assets\\gear' + slot + '.png'
+            slot_image = root_folder / ('assets/gear' + slot + '.png')
             im1 = Image.open(slot_image).convert("RGBA")
             # Recolor Equipment Slot Image for Rarity
             im1 = im1.resize((20, 20))
@@ -624,7 +643,7 @@ def make_multichar(character_list, filename):
         character_data = get_character_data(character['name'], skill_levels=character['skill_enhance'])
         temp_image = make_character_image(character_data)
         date_suffix = datetime.datetime.now().strftime("%Y-%m-%d-%H%M")
-        file_name = os.path.join(ui.outputLocationEdit.text(),f'{character["name"]}-{date_suffix}.png' )
+        file_name = os.path.join(ui.outputLocationEdit.text(), f'{character["name"]}-{date_suffix}.png' )
         send_messages(f"{character['name']} image saved to {file_name}", 'output')
         temp_image.save(file_name)
         img.paste(temp_image, (0, index * 175), temp_image)
@@ -691,7 +710,7 @@ def goButton():
 
 def config_load():
     '''Load app configuration from json, and trigger any data loads from data jsons'''
-    with open(config_file, 'r') as config_json:
+    with config_file.open() as config_json:
         saved_config = json.loads(config_json.read())
         ui.heroDataEdit.setText(saved_config['herodata.json'])
         ui.artifactDataEdit.setText(saved_config['artifactdata.json'])
@@ -714,7 +733,7 @@ def config_save():
         "preview": ui.previewCheck.isChecked(),
         "footer": ui.appDetailCheck.isChecked(),
     }
-    with open(config_file, 'w') as config_json:
+    with config_file.open('w') as config_json:
         json.dump(json_save_dict, config_json)
 
 def boldening():
@@ -734,12 +753,11 @@ def toggle_dark_style():
     '''Toggles the styling of the app to use a dark style or return to a default style'''
     global style_state
     if style_state == 'light':
-        with open('styles.qss', 'r') as f:
-            style = f.read()
-            # Set the stylesheet of the application
-
-            app.setStyleSheet(style)
-            style_state = 'dark'
+        styleSheet = root_folder / 'data/styles.qss'
+        style = styleSheet.read_text()
+        # Set the stylesheet of the application
+        app.setStyleSheet(style)
+        style_state = 'dark'
     else:
         app.setStyleSheet(base_style)
         style_state = 'light'
@@ -808,7 +826,7 @@ def ui_setup():
     boldening()
 
 # Config Filename
-config_file = 'config.json'
+config_file = root_folder / 'data/config.json'
 
 # PYQT6 Handling Code
 app = QApplication(sys.argv)
