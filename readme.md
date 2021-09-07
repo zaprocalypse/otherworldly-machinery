@@ -1,4 +1,3 @@
-
 # Otherworldly Machinery
 
 This is a tool for generating unit build images for Epic7. The idea is to show all the relevant information for units in one easy to understand place. 
@@ -6,6 +5,7 @@ This is a tool for generating unit build images for Epic7. The idea is to show a
 **Example solo image:**
 
 ![Example solo image](https://i.ibb.co/Cm5CtKv/Challenger-Dominiel-2021-09-04-1520.png)
+
 The advantages here are: 
 * Having all item information in one place, along with the hero stats
 * Details about Skill Enhancements and Imprints on the same screen as hero stats
@@ -68,6 +68,7 @@ _________________
 ## Known Issues:
 
 * **General warning! This is a super early release. Please be willing to accept some weirdness, bugs and ugliness for now.**  It's unlikely this will do anything bad to your computer, but you may need to deal with a few problems to get it working.
+* The stats shown are currently assuming that all items are fully reforged even if they are not currently reforged. I will be investigating to see if there's a way to resolve this for the next release. 
 * EEs are not shown on the output images. They are included in the actual stats. They will be added in the future, but are complex to show visually. 
 * Some images will end up incorrectly aligned due to them appearing that way in the image sources used. I've implemented some automatic edits that should crop these to fit fairly nicely, but it's possible that it doesn't work for all units - it hasn't been tested on everyone yet
 * Some artifacts or heroes may have incorrect or strange looking images. Largely these are all derived from a data source that I don't have control over, so they are difficult to fix.  
