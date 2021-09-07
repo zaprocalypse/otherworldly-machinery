@@ -27,6 +27,9 @@ Currently the code is a bit (read: **very**) hacky - but in the future I'd like 
 Also, this work is **almost entirely dependent on the work that Fribbels has done on their optimizer** - and I want to give **massive kudos and credit** to them for their work. All the data, values, calculations and stat definitions from this come directly from their work, and all I've really done is turn that data into a new format - so give them lots of kudos/support!
 
 I'd also love to give a bunch of credit to the [EpicSevenDB.com API](https://api.epicsevendb.com/) - which is where a lot of the images and unit stat information is derived from.  Super big respect for having an open API that allows for projects like this to exist.
+
+I've created a discord for general questions as well, here: https://discord.gg/4UBRyhKAze
+
 _________________
 ## Requirements
 - Windows PC (Created on Windows 10, untested on earlier versions)
